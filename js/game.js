@@ -5,15 +5,9 @@ class Game {
         this.canvas = document.createElement('canvas');
         // body タグに追加
         document.body.appendChild(this.canvas);
-        // canvasのサイズを指定
-        this.canvas.width = 400;
-        this.canvas.height = 320;
-
         
         // スケートボーダー
         this.boarder = new Sprite('img/boarder1.jpg', 32, 32)
-        this.boarder.x = this.canvas.width / 2 - 16;
-        this.boarder.y = this.canvas.height/ 2 - 16;
     } // constructor
 
     /**
@@ -23,6 +17,15 @@ class Game {
 
         // ゲームが始まったときと、ブラウザのサイズが変わったときに呼ばれる 
         const _resizeEvent = () => {
+            // canvasのサイズを指定
+            if (innerWidth > innerHeight) {
+                this.canvas.height = 320;
+                this.canvas.width = 320 * innerWidth / innerHeight;
+            } else {
+                this.canvas.width = 320;
+                this.canvas.height = 320 * innerHeight / innerWidth;
+            }
+
             const _ratio = Math.min(innerWidth / this.canvas.width, innerHeight / this.canvas.height);
             // canvasのサイズを、ブラウザに合わせて変更する
             this.canvas.style.width = this.canvas.width * _ratio + 'px';
@@ -50,6 +53,9 @@ class Game {
         _ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         _ctx.closePath();
 
+        this.boarder.x = this.canvas.width / 2 - 16;
+        this.boarder.y = this.canvas.height/ 2 - 16;
+    
         this.boarder.execute(this.canvas);
 
         requestAnimationFrame(this._mainLoop.bind(this));
