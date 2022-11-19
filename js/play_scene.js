@@ -74,6 +74,15 @@ class PlayScene extends Scene {
         // ボーダーの更新
         this.boarder.update();
 
+        if (!this.jumpFlag) {
+            this.boarder.jumpEnd();
+        }
+
+        if (this.boarder.jumpCtr > this.boarder.JUMP_MAX_LENGTH && this.jumpFlag) {
+            this.boarder.jumpEnd();
+            this.jumpFlag = false;
+        }
+
         // ブロックの更新
         for (let i in this.blocks) {
             this.blocks[i].update();
@@ -82,6 +91,8 @@ class PlayScene extends Scene {
         // 重力加速度を加算
         this.boarder.vy += this.G_ACCEL;
 
+
+        this.boarder.onGround = false;
 
         // 衝突判定
         for (let i in this.blocks) {
@@ -103,7 +114,11 @@ class PlayScene extends Scene {
 
             // ブロックとボーダーの衝突判定
             if (isCollide(this.boarder, this.blocks[i])) {
-                this.boarder.jumping = false;
+                // 衝突するとき
+
+                this.boarder.onGround = true;
+                // ジャンプ終了
+                this.boarder.jumpEnd();
 
                 let dy = (this.boarder.vy - this.blocks[i].vy);
                 while (dy > 0) {
@@ -118,12 +133,15 @@ class PlayScene extends Scene {
                 
                 if (this.jumpFlag && this.boarder.vy < 1) {
                     // もしジャンプフラグがたっていたらジャンプ
-                    this.boarder.jump();
-                    this.jumpFlag = false;
+                    this.boarder.jumpStart();
                 }
             }
         }
 
+        // #debug
+        if (this.boarder.x > 32 * 30) {
+            this.boarder.x = 0;
+        }
 
         // 動かす
         this.boarder.x += this.boarder.vx;

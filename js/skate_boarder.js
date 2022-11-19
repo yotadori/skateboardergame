@@ -12,7 +12,9 @@ class SkateBoarder extends Sprite {
         super(img, width, height);
 
         // ジャンプの初期速度
-        this.JUMP_SPEED = 8;
+        this.JUMP_SPEED = 5;
+        // ジャンプの長さ最大値
+        this.JUMP_MAX_LENGTH = 30;
         // 最高速度
         this.MAX_SPEED = 2;
         // 加速度
@@ -20,6 +22,12 @@ class SkateBoarder extends Sprite {
 
         // ジャンプ中か
         this.jumping = false;
+
+        // ジャンプ用のカウンタ
+        this.jumpCtr = 0;
+
+        // 地面についているか
+        this.onGround = true;
 
         // アニメーション用のカウンタ
         this.animationCtr = 0;
@@ -34,11 +42,24 @@ class SkateBoarder extends Sprite {
             this.vx += this.ACCEL;
         } 
 
-        // アニメーション
+        // ジャンプ
         if (this.jumping) {
-            // ジャンプ中
+            this.vy = -1 * this.JUMP_SPEED + this.JUMP_SPEED * (this.jumpCtr / this.JUMP_MAX_LENGTH);
+
+            if (this.jumpCtr > this.JUMP_MAX_LENGTH) {
+                this.jumpEnd();
+            }
+            this.jumpCtr++;
+        }
+
+        // アニメーション
+        if (this.onGround == false) {
+            // 空中
             this.frameNum = 2;
-            this.animationCtr = 0;
+            // 高く飛んだとき
+            if (this.JUMP_MAX_LENGTH - 10 < this.jumpCtr && this.jumpCtr < this.JUMP_MAX_LENGTH) {
+                this.frameNum = 3;
+            }
         } else if (this.animationCtr % 60 < 30) {
             this.frameNum = 1;
         } else {
@@ -49,10 +70,18 @@ class SkateBoarder extends Sprite {
     } // update()
 
     /**
-     * ジャンプ
+     * ジャンプ始め
      */
-    jump() {
-        this.vy = -1 * this.JUMP_SPEED;
+    jumpStart() {
         this.jumping = true;
+        this.animationCtr = 0;
     } // jump()
+
+    /**
+     * ジャンプ終わり
+     */
+    jumpEnd() {
+        this.jumpCtr = 0;
+        this.jumping = false;
+    }
 }
