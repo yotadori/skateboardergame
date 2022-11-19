@@ -12,6 +12,16 @@ class Game {
         
         // スケートボーダー
         this.boarder = new Sprite('img/boarder1.jpg', 32, 32)
+
+        // ブロック
+        this.blocks = [];
+        for (let i = 0; i < 5; i++) {
+            let block = new Sprite('img/stone.png', 32, 32);
+            block.x = i * 32;
+            block.y = 8 * 32;
+
+            this.blocks.push(block);
+        }
     } // constructor
 
     /**
@@ -41,7 +51,6 @@ class Game {
         // 画面のリサイズ
         _resizeEvent();
 
-
         // メインループへ
         this._mainLoop();
     } // start()
@@ -70,6 +79,11 @@ class Game {
         // カメラ座標を更新
         this.cameraX = this.boarder.x + 32 * 2 - (this.canvas.width - this.boarder.width) / 2
         this.cameraY = 0;
+
+        // ブロックを表示
+        for (let i in this.blocks) {
+            this.blocks[i].render(this.canvas, this.cameraX, this.cameraY);
+        }
 
         // ボーダーを表示
         this.boarder.render(this.canvas, this.cameraX, this.cameraY);
