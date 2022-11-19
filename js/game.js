@@ -22,6 +22,9 @@ class Game {
 
             this.blocks.push(block);
         }
+
+        // 重力加速度
+        this.G_ACCEL = 0.1;
     } // constructor
 
     /**
@@ -69,6 +72,8 @@ class Game {
         // 描画
         this._render();
 
+        this._update();
+
         requestAnimationFrame(this._mainLoop.bind(this));
     } // _mainLoop()
 
@@ -87,7 +92,7 @@ class Game {
 
         // ボーダーを表示
         this.boarder.render(this.canvas, this.cameraX, this.cameraY);
-    }
+    } // render()
 
     /**
      * スプライトなどの更新
@@ -95,5 +100,58 @@ class Game {
     _update() {
         // ボーダーの更新
         this.boarder.update();
-    }
+        
+        // ブロックの更新
+        for (let i in this.blocks) {
+            this.blocks[i].update();
+        }
+
+        // 重力加速度を加算
+        this.boarder.vy += this.G_ACCEL;
+
+        
+        // 衝突判定
+        for (let i in this.blocks) {
+            // 重なっているか
+            const isCollide = (sprite1, sprite2) => {
+                // 移動後の中心座標
+                const x1 = sprite1.centerX() + sprite1.vx;
+                const x2 = sprite2.centerX() + sprite2.vx;
+                
+                const y1 = sprite1.centerY() + sprite1.vy;
+                const y2 = sprite2.centerY() + sprite2.vy;
+
+                if ((Math.abs(x1 - x2) < (sprite1.width + sprite2.width) / 2)
+                    && (Math.abs(y1 - y2) < (sprite1.height + sprite2.height) / 2)) {
+                    return true;
+                }
+                return false;
+            };
+            
+            // ブロックとボーダーの衝突判定
+            if (isCollide(this.boarder, this.blocks[i])) {
+                let dy = (this.boarder.vy - this.blocks[i].vy);
+                while (dy > 0) {
+                    dy /= 2;
+                    // ちょうど衝突しなくなるまで速度を調整
+                    if (isCollide(this.boarder, this.blocks[i])) {
+                        this.boarder.vy -= dy;
+                    } else {
+                        this.boarder.vy += dy;
+                    }
+                }
+            }
+        }
+
+
+        // 動かす
+        this.boarder.x += this.boarder.vx;
+        this.boarder.y += this.boarder.vy;
+        
+        for (let i in this.blocks) {
+            this.blocks[i].x += this.blocks[i].vx;
+            this.blocks[i].y += this.blocks[i].vy;
+        }
+        
+    } // update()
 }

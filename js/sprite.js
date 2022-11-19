@@ -49,4 +49,20 @@ class Sprite {
      * 座標などを更新する
      */
     update() {}
+
+    /**
+     * 
+     * @returns {number} 中心のX座標
+     */
+    centerX() {
+        return this.x + this.width / 2;
+    }
+
+    /**
+     * 
+     * @returns {number} 中心のY座標
+     */
+    centerY() {
+        return this.y + this.height / 2;
+    }
 }
