@@ -1,3 +1,5 @@
+'use strict'
+
 class Game {
 
     constructor() {
@@ -6,26 +8,10 @@ class Game {
         // body タグに追加
         document.body.appendChild(this.canvas);
 
-        // 表示領域の左上の座標
-        this.cameraX = 0;
-        this.cameraY = 0;
-        
-        // スケートボーダー
-        this.boarder = new Sprite('img/boarder1.jpg', 32, 32)
+        // 現在のシーン
+        this.currentScene = new PlayScene(this.canvas);
 
-        // ブロック
-        this.blocks = [];
-        for (let i = 0; i < 5; i++) {
-            let block = new Sprite('img/stone.png', 32, 32);
-            block.x = i * 32;
-            block.y = 8 * 32;
-
-            this.blocks.push(block);
-        }
-
-        // 重力加速度
-        this.G_ACCEL = 0.1;
-    } // constructor
+       } // constructor
 
     /**
      * ゲームを開始する
@@ -54,6 +40,9 @@ class Game {
         // 画面のリサイズ
         _resizeEvent();
 
+        // 入力イベントの設定
+        this._setInput();
+
         // メインループへ
         this._mainLoop();
     } // start()
@@ -62,96 +51,61 @@ class Game {
      * メインループ
      */
     _mainLoop() {
-        // キャンバスを黒塗り
-        const _ctx = this.canvas.getContext('2d');
-        _ctx.beginPath();
-        _ctx.fillStyle = 'black';
-        _ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        _ctx.closePath();
+        this.currentScene.execute();
 
-        // 描画
-        this._render();
-
-        this._update();
-
+        // 繰り返す
         requestAnimationFrame(this._mainLoop.bind(this));
     } // _mainLoop()
 
     /**
-     * 描画処理
+     * 入力イベントの設定
      */
-    _render() {
-        // カメラ座標を更新
-        this.cameraX = this.boarder.x + 32 * 2 - (this.canvas.width - this.boarder.width) / 2
-        this.cameraY = 0;
+    _setInput() {
+        // キーボードが押されたときと、離されたときに呼ばれる
+        const _keyEvent = e => {
+            // デフォルトのイベントを発生させない
+            e.preventDefault();
 
-        // ブロックを表示
-        for (let i in this.blocks) {
-            this.blocks[i].render(this.canvas, this.cameraX, this.cameraY);
-        }
-
-        // ボーダーを表示
-        this.boarder.render(this.canvas, this.cameraX, this.cameraY);
-    } // render()
-
-    /**
-     * スプライトなどの更新
-     */
-    _update() {
-        // ボーダーの更新
-        this.boarder.update();
+            // 現在のシーンの、キーイベントを割り当てるメソッドを呼び出す
+            this.currentScene.assignKeyEvent(e);
+        } // keyEvent()
         
-        // ブロックの更新
-        for (let i in this.blocks) {
-            this.blocks[i].update();
+        // 何かキーが押されたとき
+        addEventListener('keydown', _keyEvent, {
+            passive: false
         }
+        );
+        // キーが離されたとき
+        addEventListener('keyup', _keyEvent, {
+            passive: false
+        });
 
-        // 重力加速度を加算
-        this.boarder.vy += this.G_ACCEL;
-
-        
-        // 衝突判定
-        for (let i in this.blocks) {
-            // 重なっているか
-            const isCollide = (sprite1, sprite2) => {
-                // 移動後の中心座標
-                const x1 = sprite1.centerX() + sprite1.vx;
-                const x2 = sprite2.centerX() + sprite2.vx;
-                
-                const y1 = sprite1.centerY() + sprite1.vy;
-                const y2 = sprite2.centerY() + sprite2.vy;
-
-                if ((Math.abs(x1 - x2) < (sprite1.width + sprite2.width) / 2)
-                    && (Math.abs(y1 - y2) < (sprite1.height + sprite2.height) / 2)) {
-                    return true;
-                }
-                return false;
+        // 画面がタッチされたり、指が動いたりしたときなどに呼ばれる
+        const _touchEvent = e => {
+            // デフォルトのイベントを察性させない
+            e.preventDefault();
+            // タッチされた場所などの情報を取得
+            const _touches = e.changedTouches[0];
+            // 表示領域の左上から見てどこにあるか
+            const _rect = _touches.target.getBoundingClientRect();
+            // タッチされた場所を計算
+            const _fingerPosition = {
+                x: (_touches.clientX - _rect.left) / _rect.width * this.canvas.width,
+                y: (_touches.clientY - _rect.top) / _rect.height * this.canvas.height
             };
-            
-            // ブロックとボーダーの衝突判定
-            if (isCollide(this.boarder, this.blocks[i])) {
-                let dy = (this.boarder.vy - this.blocks[i].vy);
-                while (dy > 0) {
-                    dy /= 2;
-                    // ちょうど衝突しなくなるまで速度を調整
-                    if (isCollide(this.boarder, this.blocks[i])) {
-                        this.boarder.vy -= dy;
-                    } else {
-                        this.boarder.vy += dy;
-                    }
-                }
-            }
-        }
+            // イベントのタイプ
+            const _eventType = e.type;
+            // タッチイベントを割り当てるためのメソッドを呼び出す
+            this.currentScene.assignTouchEvent(_eventType, _fingerPosition);
+        } // _touchEvent()
 
+        // タッチされたとき
+        this.canvas.addEventListener('touchstart', _touchEvent, {passive: false});
+        // 指が動かされたとき
+        this.canvas.addEventListener('touchmove', _touchEvent, {passive: false});
+        // 指が離されたとき
+        this.canvas.addEventListener('touchend', _touchEvent, {passive: false});
+    } // _setInput()
 
-        // 動かす
-        this.boarder.x += this.boarder.vx;
-        this.boarder.y += this.boarder.vy;
-        
-        for (let i in this.blocks) {
-            this.blocks[i].x += this.blocks[i].vx;
-            this.blocks[i].y += this.blocks[i].vy;
-        }
-        
-    } // update()
+    
 }
