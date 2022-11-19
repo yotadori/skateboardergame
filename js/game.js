@@ -5,6 +5,10 @@ class Game {
         this.canvas = document.createElement('canvas');
         // body タグに追加
         document.body.appendChild(this.canvas);
+
+        // 表示領域の左上の座標
+        this.cameraX = 0;
+        this.cameraY = 0;
         
         // スケートボーダー
         this.boarder = new Sprite('img/boarder1.jpg', 32, 32)
@@ -53,11 +57,29 @@ class Game {
         _ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         _ctx.closePath();
 
-        this.boarder.x = this.canvas.width / 2 - 16;
-        this.boarder.y = this.canvas.height/ 2 - 16;
-    
-        this.boarder.execute(this.canvas);
+        // 描画
+        this._render();
 
         requestAnimationFrame(this._mainLoop.bind(this));
     } // _mainLoop()
+
+    /**
+     * 描画処理
+     */
+    _render() {
+        // カメラ座標を更新
+        this.cameraX = this.boarder.x - (this.canvas.width - this.boarder.width) / 2
+        this.cameraY = this.boarder.y - (this.canvas.height - this.boarder.height) / 2
+
+        // ボーダーを表示
+        this.boarder.render(this.canvas, this.cameraX, this.cameraY);
+    }
+
+    /**
+     * スプライトなどの更新
+     */
+    _update() {
+        // ボーダーの更新
+        this.boarder.update();
+    }
 }

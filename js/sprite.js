@@ -14,30 +14,21 @@ class Sprite {
         this.img.src = img;
         // 座標
         this.x = this.y = 0;
+        // 速度
+        this.vx = this.vy = 0;
         // サイズ
         this.width = width || 32;
         this.height = height || 32;
     } // constructor()
 
     /**
-     * 更新する
-     * 
-     * @param {canvas} canvas キャンバス
-     */
-    execute(canvas) {
-        // 画像などを表示
-        this.render(canvas);
-        
-        // 座標などを更新
-        this.update();
-    } // execute()
-
-    /**
      * 画像などを画面に表示する
      * 
-     * @param {canvas} canvas 
+     * @param {HTMLCanvasElement} canvas 
+     * @param {number} cameraX 表示領域の左端X座標
+     * @param {number} cameraY 表示領域の上端Y座標
      */
-    render(canvas) {
+    render(canvas, cameraX, cameraY) {
         // コンテキスト
         const _ctx = canvas.getContext('2d');
 
@@ -48,8 +39,8 @@ class Sprite {
             0,
             this.width,
             this.height,
-            this.x,
-            this.y,
+            this.x - cameraX,
+            this.y - cameraY,
             this.width,
             this.height);
     } // render()
