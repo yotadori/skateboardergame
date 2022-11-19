@@ -14,7 +14,7 @@ class PlayScene extends Scene {
         this.cameraY = 0;
 
         // スケートボーダー
-        this.boarder = new SkateBoarder('img/boarder1.jpg', 32, 32)
+        this.boarder = new SkateBoarder('img/boarder.png', 32, 32)
         this.boarder.y = 6 * 32;
 
         // ブロック
@@ -103,6 +103,8 @@ class PlayScene extends Scene {
 
             // ブロックとボーダーの衝突判定
             if (isCollide(this.boarder, this.blocks[i])) {
+                this.boarder.jumping = false;
+
                 let dy = (this.boarder.vy - this.blocks[i].vy);
                 while (dy > 0) {
                     dy /= 2;
@@ -117,6 +119,7 @@ class PlayScene extends Scene {
                 if (this.jumpFlag && this.boarder.vy < 1) {
                     // もしジャンプフラグがたっていたらジャンプ
                     this.boarder.jump();
+                    this.jumpFlag = false;
                 }
             }
         }

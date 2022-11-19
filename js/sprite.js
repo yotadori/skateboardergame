@@ -19,6 +19,8 @@ class Sprite {
         // サイズ
         this.width = width || 32;
         this.height = height || 32;
+        // 何番目の画像を表示するか
+        this.frameNum = 0;
     } // constructor()
 
     /**
@@ -35,7 +37,7 @@ class Sprite {
         // 描画
         _ctx.drawImage(
             this.img,
-            0,
+            this.frameNum * this.width,
             0,
             this.width,
             this.height,
