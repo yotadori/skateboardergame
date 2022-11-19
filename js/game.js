@@ -22,11 +22,11 @@ class Game {
         const _resizeEvent = () => {
             // canvasのサイズを指定
             if (innerWidth > innerHeight) {
-                this.canvas.height = 320;
-                this.canvas.width = 320 * innerWidth / innerHeight;
+                this.canvas.height = 256;
+                this.canvas.width = 256 * innerWidth / innerHeight;
             } else {
-                this.canvas.width = 320;
-                this.canvas.height = 320 * innerHeight / innerWidth;
+                this.canvas.width = 256;
+                this.canvas.height = 256 * innerHeight / innerWidth;
             }
 
             const _ratio = Math.min(innerWidth / this.canvas.width, innerHeight / this.canvas.height);

@@ -13,7 +13,21 @@ class SkateBoarder extends Sprite {
 
         // ジャンプの初期速度
         this.JUMP_SPEED = 8;
+        // 最高速度
+        this.MAX_SPEED = 2;
+        // 加速度
+        this.ACCEL = 0.05;
     } // constructor()
+
+    /**
+     * 更新
+     */
+    update() {
+        if (this.vx < this.MAX_SPEED) {
+            this.vx += this.ACCEL;
+        } 
+
+    } // update()
 
     /**
      * ジャンプ

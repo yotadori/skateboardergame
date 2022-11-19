@@ -15,13 +15,14 @@ class PlayScene extends Scene {
 
         // スケートボーダー
         this.boarder = new SkateBoarder('img/boarder1.jpg', 32, 32)
+        this.boarder.y = 6 * 32;
 
         // ブロック
         this.blocks = [];
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 50; i++) {
             let block = new Sprite('img/stone.png', 32, 32);
             block.x = i * 32;
-            block.y = 8 * 32;
+            block.y = 7 * 32;
 
             this.blocks.push(block);
         }
