@@ -58,12 +58,13 @@ class SkateBoarder extends Sprite {
             this.frameNum = 2;
             // 高く飛んだとき
             if (this.JUMP_MAX_LENGTH - 10 < this.jumpCtr && this.jumpCtr < this.JUMP_MAX_LENGTH) {
-                this.frameNum = 3;
+                this.frameNum = 3; // 回っている画像
             }
+            this.animationCtr = 0; // 着地時にしゃがむように
         } else if (this.animationCtr % 60 < 30) {
-            this.frameNum = 1;
+            this.frameNum = 1; // 低い
         } else {
-            this.frameNum = 0;
+            this.frameNum = 0; // 高い
         }
         this.animationCtr++;
 
