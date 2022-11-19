@@ -68,8 +68,8 @@ class Game {
      */
     _render() {
         // カメラ座標を更新
-        this.cameraX = this.boarder.x - (this.canvas.width - this.boarder.width) / 2
-        this.cameraY = this.boarder.y - (this.canvas.height - this.boarder.height) / 2
+        this.cameraX = this.boarder.x + 32 * 2 - (this.canvas.width - this.boarder.width) / 2
+        this.cameraY = 0;
 
         // ボーダーを表示
         this.boarder.render(this.canvas, this.cameraX, this.cameraY);
