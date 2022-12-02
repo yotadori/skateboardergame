@@ -145,14 +145,14 @@ class PlayScene extends Scene {
                 this.boarder.jumpEnd();
 
                 let dy = (this.boarder.vy - this.blocks[i].vy);
-                while (dy > 0) {
-                    dy /= 2;
+                while (dy < -0.1 || 0.1 < dy) {
                     // ちょうど衝突しなくなるまで速度を調整
                     if (isCollide(this.boarder, this.blocks[i])) {
                         this.boarder.vy -= dy;
                     } else {
                         this.boarder.vy += dy;
                     }
+                    dy /= 2;
                 }
                 
                 if (this.jumpFlag && this.boarder.vy < 1) {
