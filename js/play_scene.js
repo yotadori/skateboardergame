@@ -9,23 +9,47 @@ class PlayScene extends Scene {
     constructor(canvas) {
         super(canvas);
 
+        this.TILE_SIZE = 32;
+
+        this.MAP = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 2, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+
         // 表示領域の左上の座標
         this.cameraX = 0;
         this.cameraY = 0;
 
         // スケートボーダー
         this.boarder = new SkateBoarder('img/boarder.png', 32, 32)
-        this.boarder.y = 6 * 32;
 
         // ブロック
         this.blocks = [];
-        for (let i = 0; i < 50; i++) {
-            let block = new Sprite('img/stone.png', 32, 32);
-            block.x = i * 32;
-            block.y = 7 * 32;
 
-            this.blocks.push(block);
+        // マップデータから生成
+        for (let y = 0; y < this.MAP.length; y++) {
+            for (let x = 0; x < this.MAP[0].length; x++) {
+                switch (this.MAP[y][x]) {
+                    case 1:
+                        const block = new Sprite('img/stone.png', 32, 32);
+                        block.x = x * this.TILE_SIZE;
+                        block.y = y * this.TILE_SIZE;
+                        this.blocks.push(block)
+                        break;
+                    case 2:
+                        this.boarder.x = x * this.TILE_SIZE;
+                        this.boarder.y = x * this.TILE_SIZE;
+                        break;
+                }
+            }
         }
+        
 
         // ジャンプするフラグ
         this.jumpFlag = false;
@@ -55,7 +79,7 @@ class PlayScene extends Scene {
      */
     _render() {
         // カメラ座標を更新
-        this.cameraX = this.boarder.x + 32 * 2 - (this.canvas.width - this.boarder.width) / 2
+        this.cameraX = this.boarder.x + this.TILE_SIZE * 2 - (this.canvas.width - this.boarder.width) / 2
         this.cameraY = 0;
 
         // ブロックを表示
@@ -139,7 +163,7 @@ class PlayScene extends Scene {
         }
 
         // #debug
-        if (this.boarder.x > 32 * 30) {
+        if (this.boarder.x > this.MAP[0].length * this.TILE_SIZE) {
             this.boarder.x = 0;
         }
 
