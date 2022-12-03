@@ -17,9 +17,9 @@ class PlayScene extends Scene {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 2, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            [0, 0, 0, 1, 0, 0, 0, 0, 3, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1],
+            [0, 2, 0, 1, 0, 0, 3, 0, 1, 1, 1, 1, 0, 0, 3, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1]
         ];
 
         // 表示領域の左上の座標
@@ -37,14 +37,28 @@ class PlayScene extends Scene {
             for (let x = 0; x < this.MAP[0].length; x++) {
                 switch (this.MAP[y][x]) {
                     case 1:
-                        const block = new Sprite('img/stone.png', 32, 32);
-                        block.x = x * this.TILE_SIZE;
-                        block.y = y * this.TILE_SIZE;
-                        this.blocks.push(block)
+                        if (y != 0 && this.MAP[y - 1][x] == 2) {
+                            const block = new GhostBlock('img/stone.png', 32, 32);
+                            block.x = x * this.TILE_SIZE;
+                            block.y = y * this.TILE_SIZE;
+                            this.blocks.push(block);
+                        } else {
+                            const block = new Block('img/stone.png', 32, 32);
+                            block.x = x * this.TILE_SIZE;
+                            block.y = y * this.TILE_SIZE;
+                            this.blocks.push(block);
+                        }
+
                         break;
                     case 2:
                         this.boarder.x = x * this.TILE_SIZE;
                         this.boarder.y = x * this.TILE_SIZE;
+                        break;
+                    case 3:
+                        const slope = new Slope('img/slope1.png', 64, 32);
+                        slope.x = x * this.TILE_SIZE;
+                        slope.y = y * this.TILE_SIZE;
+                        this.blocks.push(slope)
                         break;
                 }
             }
@@ -120,42 +134,14 @@ class PlayScene extends Scene {
 
         // 衝突判定
         for (let i in this.blocks) {
-            // 重なっているか
-            const isCollide = (sprite1, sprite2) => {
-                // 移動後の中心座標
-                const x1 = sprite1.centerX() + sprite1.vx;
-                const x2 = sprite2.centerX() + sprite2.vx;
-
-                const y1 = sprite1.centerY() + sprite1.vy;
-                const y2 = sprite2.centerY() + sprite2.vy;
-
-                if ((Math.abs(x1 - x2) < (sprite1.width + sprite2.width) / 2)
-                    && (Math.abs(y1 - y2) < (sprite1.height + sprite2.height) / 2)) {
-                    return true;
-                }
-                return false;
-            };
-
             // ブロックとボーダーの衝突判定
-            if (isCollide(this.boarder, this.blocks[i])) {
-                // 衝突するとき
+            if (this.blocks[i].isCollide(this.boarder)) {
+                this.blocks[i].onCollide(this.boarder);
 
-                this.boarder.onGround = true;
                 // ジャンプ終了
                 this.boarder.jumpEnd();
-
-                let dy = (this.boarder.vy - this.blocks[i].vy);
-                while (dy < -0.1 || 0.1 < dy) {
-                    // ちょうど衝突しなくなるまで速度を調整
-                    if (isCollide(this.boarder, this.blocks[i])) {
-                        this.boarder.vy -= dy;
-                    } else {
-                        this.boarder.vy += dy;
-                    }
-                    dy /= 2;
-                }
                 
-                if (this.jumpFlag && this.boarder.vy < 1) {
+                if (this.jumpFlag) {
                     // もしジャンプフラグがたっていたらジャンプ
                     this.boarder.jumpStart();
                 }
