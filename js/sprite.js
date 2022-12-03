@@ -21,6 +21,8 @@ class Sprite {
         this.height = height || 32;
         // 何番目の画像を表示するか
         this.frameNum = 0;
+        // 角度
+        this.rotate = 0;
     } // constructor()
 
     /**
@@ -31,9 +33,25 @@ class Sprite {
      * @param {number} cameraY 表示領域の上端Y座標
      */
     render(canvas, cameraX, cameraY) {
+        // キャンバスの外にスプライトがあるとき、ここでこのメソッドを終了する
+        if (this.x - cameraX < -1 * this.width || this.x - cameraX > canvas.width) return;
+        if (this.y - cameraY < -1 * this.height || this.y - cameraY> canvas.height) return;
+
+
         // コンテキスト
         const _ctx = canvas.getContext('2d');
-
+        
+        // スプライトを回転させるときの中心位置を変更するための、canvasの原点の移動量
+        const _translateX = this.centerX() - cameraX;
+        const _translateY = this.centerY() - cameraY;
+        // 描画状態を保存する
+        _ctx.save();
+        // canvasの原点の移動
+        _ctx.translate(_translateX, _translateY);
+        // canvasを回転
+        _ctx.rotate(this.rotate);
+        // 移動したcanvasの原点を戻す
+        _ctx.translate(-1 * _translateX, -1 * _translateY);
         // 描画
         _ctx.drawImage(
             this.img,
@@ -45,6 +63,8 @@ class Sprite {
             this.y - cameraY,
             this.width,
             this.height);
+        // 保存しておいた描画状態に戻す
+        _ctx.restore();
     } // render()
 
     /**

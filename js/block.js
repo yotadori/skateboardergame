@@ -26,7 +26,7 @@ class Block extends Sprite {
         const y1 = sprite.centerY() + sprite.vy;
         const y2 = this.centerY() + this.vy;
 
-        if ((Math.abs(x1 - x2) < (sprite.width + this.width) / 2)
+        if ((Math.abs(x1 - x2) < (sprite.width + this.width) / 2 - 8)
             && (Math.abs(y1 - y2) < (sprite.height + this.height) / 2)) {
             return true;
         }

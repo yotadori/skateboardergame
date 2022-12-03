@@ -27,8 +27,8 @@ class Slope extends Block {
         const y2 = this.centerY() + this.vy;
 
         if ((Math.abs(x1 - x2) < (sprite.width + this.width) / 2)
-            && (Math.abs(y1 - y2) < (sprite.height + this.height) / 2) &&
-            Math.abs(y1 + sprite.height/2 - y2 - this.height/2) < Math.abs(x1 + sprite.width/2 - x2 + this.width/2) * this.height / this.width) {
+            && (Math.abs(y1 - y2) < (sprite.height + this.height * 2) / 2) &&
+            Math.abs(y1 + sprite.height/2 - y2 - this.height/2) + 4 < Math.abs(x1 + sprite.width/2 - x2 + this.width/2) * this.height / this.width) {
             return true;
         }
         return false;
@@ -47,14 +47,13 @@ class Slope extends Block {
         const y1 = sprite.centerY() + sprite.vy;
         const y2 = this.centerY() + this.vy;
 
-        if (x2 + this.width/2 < x1 + sprite.width/2) {
-            sprite.y += sprite.height + sprite.vy + Math.abs(y1 - y2) - (sprite.height + this.height) / 2;
-        } else {
-            sprite.y += sprite.vy + Math.abs(y1 + sprite.height / 2 - y2 - this.height / 2)
+        if (x1 + sprite.width / 8 < x2 + this.width / 2) {
+            sprite.rotate = -1 * Math.atan2(this.height, this.width);
+            sprite.y += 4 + sprite.vy + Math.abs(y1 + sprite.height / 2 - y2 - this.height / 2)
                 - Math.abs(x1 + sprite.width / 2 - x2 + this.width / 2) * this.height / this.width;
+            sprite.vy = this.vy;
         }
-       
-        sprite.vy = this.vy;
+
         if (sprite instanceof SkateBoarder) {
             sprite.onGround = true;
         }

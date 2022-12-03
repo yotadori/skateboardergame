@@ -16,9 +16,9 @@ class PlayScene extends Scene {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0, 3, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1],
-            [0, 2, 0, 1, 0, 0, 3, 0, 1, 1, 1, 1, 0, 0, 3, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 2, 3, 0, 3, 0, 3, 0, 3, 0, 1, 1, 0, 0, 3, 0, 0, 0, 0, 0],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1]
         ];
 
@@ -37,7 +37,7 @@ class PlayScene extends Scene {
             for (let x = 0; x < this.MAP[0].length; x++) {
                 switch (this.MAP[y][x]) {
                     case 1:
-                        if (y != 0 && this.MAP[y - 1][x] == 2) {
+                        if (y != 0 && this.MAP[y - 1][x] == 3) {
                             const block = new GhostBlock('img/stone.png', 32, 32);
                             block.x = x * this.TILE_SIZE;
                             block.y = y * this.TILE_SIZE;
@@ -131,6 +131,7 @@ class PlayScene extends Scene {
 
 
         this.boarder.onGround = false;
+        this.boarder.rotate = 0;
 
         // 衝突判定
         for (let i in this.blocks) {
