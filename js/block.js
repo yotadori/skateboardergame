@@ -10,6 +10,8 @@ class Block extends Sprite {
      */
     constructor(img, width, height) {
         super(img, width, height);
+        this.marginLeft = 4;
+        this.marginRight = 4;
     } // constructor()
 
     /**
@@ -26,8 +28,8 @@ class Block extends Sprite {
         const y1 = sprite.centerY() + sprite.vy;
         const y2 = this.centerY() + this.vy;
 
-        if ((Math.abs(x1 - x2) < (sprite.width + this.width) / 2 - 8)
-            && (Math.abs(y1 - y2) < (sprite.height + this.height) / 2)) {
+        if ((Math.abs(x1 - x2) < (sprite.collideWidth() + this.collideWidth()) / 2)
+            && (Math.abs(y1 - y2) < (sprite.collideHeight() + this.collideHeight()) / 2)) {
             return true;
         }
         return false;
@@ -47,9 +49,9 @@ class Block extends Sprite {
         const y2 = this.centerY() + this.vy;
 
         if (sprite.vy - this.vy >= 0) {
-            sprite.y += sprite.vy + Math.abs(y1 - y2) - (sprite.height + this.height) / 2;
+            sprite.y += sprite.vy + Math.abs(y1 - y2) - (sprite.collideHeight() + this.collideHeight()) / 2;
         } else {
-            sprite.y += sprite.vy - Math.abs(y1 - y2) + (sprite.height + this.height) / 2;
+            sprite.y += sprite.vy - Math.abs(y1 - y2) + (sprite.collideHeight() + this.collideHeight()) / 2;
         }
 
         sprite.vy = this.vy;

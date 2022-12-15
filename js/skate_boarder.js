@@ -31,6 +31,9 @@ class SkateBoarder extends Sprite {
 
         // アニメーション用のカウンタ
         this.animationCtr = 0;
+
+        this.marginLeft = 5;
+        this.marginRight = 5;
     } // constructor()
 
     /**

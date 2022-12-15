@@ -14,11 +14,11 @@ class PlayScene extends Scene {
         this.MAP = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 2, 3, 0, 3, 0, 3, 0, 3, 0, 1, 1, 0, 0, 3, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 2, 0, 0, 0, 3, 0, 1, 1, 1, 1, 0, 0, 4, 0, 4, 0, 0, 0, 0],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1]
         ];
 
@@ -31,6 +31,9 @@ class PlayScene extends Scene {
 
         // ブロック
         this.blocks = [];
+
+        // 障害物
+        this.obstacles = [];
 
         // マップデータから生成
         for (let y = 0; y < this.MAP.length; y++) {
@@ -59,6 +62,13 @@ class PlayScene extends Scene {
                         slope.x = x * this.TILE_SIZE;
                         slope.y = y * this.TILE_SIZE;
                         this.blocks.push(slope)
+                        break;
+                    case 4:
+                        // 障害物
+                        const obstacle = new Pylon('img/pylon.png', 16, 16)
+                        obstacle.x = x * this.TILE_SIZE;
+                        obstacle.y = y * this.TILE_SIZE + 16;
+                        this.obstacles.push(obstacle)
                         break;
                 }
             }
@@ -100,6 +110,11 @@ class PlayScene extends Scene {
         for (let i in this.blocks) {
             this.blocks[i].render(this.canvas, this.cameraX, this.cameraY);
         }
+        
+        // 障害物を表示
+        for (let i in this.obstacles) {
+            this.obstacles[i].render(this.canvas, this.cameraX, this.cameraY);
+        }
 
         // ボーダーを表示
         this.boarder.render(this.canvas, this.cameraX, this.cameraY);
@@ -126,8 +141,17 @@ class PlayScene extends Scene {
             this.blocks[i].update();
         }
 
+        // 障害物の更新
+        for (let i in this.obstacles) {
+            this.obstacles[i].update();
+        }
+
         // 重力加速度を加算
         this.boarder.vy += this.G_ACCEL;
+
+        for (let i in this.obstacles) {
+            this.obstacles[i].vy += this.G_ACCEL;
+        }
 
 
         this.boarder.onGround = false;
@@ -148,6 +172,19 @@ class PlayScene extends Scene {
                 }
             }
         }
+        for (let i in this.obstacles) {
+            // 障害物とボーダーの衝突判定
+            if (this.obstacles[i].isCollide(this.boarder)) {
+                this.obstacles[i].onCollide(this.boarder);
+            }
+
+            // 障害物とブロックの衝突判定
+            for (let j in this.blocks) {
+                if (this.blocks[j].isCollide(this.obstacles[i])) {
+                    this.blocks[j].onCollide(this.obstacles[i])
+                }
+            }
+        }
 
         // #debug
         if (this.boarder.x > this.MAP[0].length * this.TILE_SIZE) {
@@ -161,6 +198,11 @@ class PlayScene extends Scene {
         for (let i in this.blocks) {
             this.blocks[i].x += this.blocks[i].vx;
             this.blocks[i].y += this.blocks[i].vy;
+        }
+        
+        for (let i in this.obstacles) {
+            this.obstacles[i].x += this.obstacles[i].vx;
+            this.obstacles[i].y += this.obstacles[i].vy;
         }
 
     } // _update()

@@ -23,6 +23,11 @@ class Sprite {
         this.frameNum = 0;
         // 角度
         this.rotate = 0;
+        // 衝突判定のマージン
+        this.marginLeft = 0;
+        this.marginRight = 0;
+        this.marginTop = 0;
+        this.marginBottom = 0;
     } // constructor()
 
     /**
@@ -77,7 +82,7 @@ class Sprite {
      * @returns {number} 中心のX座標
      */
     centerX() {
-        return this.x + this.width / 2;
+        return this.x + (this.marginLeft + this.width - this.marginRight) / 2;
     }
 
     /**
@@ -85,7 +90,23 @@ class Sprite {
      * @returns {number} 中心のY座標
      */
     centerY() {
-        return this.y + this.height / 2;
+        return this.y + (this.marginTop + this.height - this.marginBottom) / 2;
+    }
+
+    /**
+     * 
+     * @returns {number} 衝突判定に使う幅
+     */
+    collideWidth() {
+        return this.width - this.marginRight - this.marginLeft;
+    }
+    
+    /**
+     * 
+     * @returns {number} 衝突判定に使う高さ
+     */
+    collideHeight() {
+        return this.height - this.marginTop - this.marginBottom;
     }
 
     /**
@@ -102,8 +123,8 @@ class Sprite {
         const y1 = sprite.centerY() + sprite.vy;
         const y2 = this.centerY() + this.vy;
 
-        if ((Math.abs(x1 - x2) < (sprite.width + this.width) / 2)
-            && (Math.abs(y1 - y2) < (sprite.height + this.height) / 2)) {
+        if ((Math.abs(x1 - x2) < (sprite.collideWidth() + this.collideWidth()) / 2)
+            && (Math.abs(y1 - y2) < (sprite.collideHeight() + this.collideHeight()) / 2)) {
             return true;
         }
         return false;

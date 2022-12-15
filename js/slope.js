@@ -10,6 +10,8 @@ class Slope extends Block {
      */
     constructor(img, width, height) {
         super(img, width, height);
+        this.marginLeft = 0;
+        this.marginRight = 4;
     } // constructor()
 
     /**
