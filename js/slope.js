@@ -10,8 +10,6 @@ class Slope extends Block {
      */
     constructor(img, width, height) {
         super(img, width, height);
-        this.marginLeft = 0;
-        this.marginRight = 4;
     } // constructor()
 
     /**
@@ -30,7 +28,7 @@ class Slope extends Block {
 
         if ((Math.abs(x1 - x2) < (sprite.width + this.width) / 2)
             && (Math.abs(y1 - y2) < (sprite.height + this.height * 2) / 2) &&
-            Math.abs(y1 + sprite.height/2 - y2 - this.height/2) + 4 < Math.abs(x1 + sprite.width/2 - x2 + this.width/2) * this.height / this.width) {
+            Math.abs(y1 + sprite.height/2 - y2 - this.height/2) + 6 < Math.abs(x1 + sprite.width/2 - x2 + this.width/2) * this.height / this.width) {
             return true;
         }
         return false;
@@ -51,7 +49,7 @@ class Slope extends Block {
 
         if (x1 + sprite.width / 8 < x2 + this.width / 2) {
             sprite.rotate = -1 * Math.atan2(this.height, this.width);
-            sprite.y += 4 + sprite.vy + Math.abs(y1 + sprite.height / 2 - y2 - this.height / 2)
+            sprite.y += 6 + sprite.vy + Math.abs(y1 + sprite.height / 2 - y2 - this.height / 2)
                 - Math.abs(x1 + sprite.width / 2 - x2 + this.width / 2) * this.height / this.width;
             sprite.vy = this.vy;
         }
