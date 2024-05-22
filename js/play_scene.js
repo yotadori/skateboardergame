@@ -27,7 +27,7 @@ class PlayScene extends Scene {
         this.cameraY = 0;
 
         // スケートボーダー
-        this.boarder = new SkateBoarder('img/boarder.png', 32, 32)
+        this.boarder = new SkateBoarder('img/boarder.png', 32, 32);
 
         // ブロック
         this.blocks = [];
@@ -35,6 +35,47 @@ class PlayScene extends Scene {
         // 障害物
         this.obstacles = [];
 
+        // ランダムにマップを生成
+        this.MAP_LENGTH = 1000;
+        let next_object_x = 10;
+        this.boarder.x = 3 * this.TILE_SIZE;
+        this.boarder.y = 3 * this.TILE_SIZE;
+        for (let x = 0; x < this.MAP_LENGTH; x++) {
+            if (x > next_object_x) {
+                let object_num = (Math.trunc(Math.random() * 1000)) % 9;
+                if (object_num < 4) {
+                    // パイロンを生成
+                    const obstacle = new Pylon('img/pylon.png', 16, 16);
+                    obstacle.x = x * this.TILE_SIZE;
+                    obstacle.y = 6 * this.TILE_SIZE + 16;
+                    this.obstacles.push(obstacle);
+                    // 次の障害物の位置
+                    next_object_x += Math.trunc(Math.random() * 3) + 2;
+                } else if (object_num < 6) {
+                    // 坂を生成
+                    const slope = new Slope('img/slope1.png', 64, 32);
+                    slope.x = x * this.TILE_SIZE;
+                    slope.y = 6 * this.TILE_SIZE;
+                    this.blocks.push(slope)
+                    // 次の障害物の位置
+                    next_object_x += Math.trunc(Math.random() * 4) + 3;
+                } else {
+                    // 次の障害物の位置
+                    next_object_x += Math.trunc(Math.random() * 5) + 3;
+                    // 穴
+                    x += 1;
+                    continue;
+                }
+            }
+            
+            // 床を生成
+            const block = new Block('img/stone.png', 32, 32);
+            block.x = x * this.TILE_SIZE;
+            block.y = 7 * this.TILE_SIZE;
+            this.blocks.push(block);
+        }
+
+        /**
         // マップデータから生成
         for (let y = 0; y < this.MAP.length; y++) {
             for (let x = 0; x < this.MAP[0].length; x++) {
@@ -73,6 +114,7 @@ class PlayScene extends Scene {
                 }
             }
         }
+        */
         
 
         // ジャンプするフラグ
@@ -187,13 +229,16 @@ class PlayScene extends Scene {
         }
 
         // #debug
-        if (this.boarder.x > this.MAP[0].length * this.TILE_SIZE) {
+        if (this.boarder.x > this.MAP_LENGTH * this.TILE_SIZE) {
             this.boarder.x = 0;
         }
 
         // 動かす
         this.boarder.x += this.boarder.vx;
         this.boarder.y += this.boarder.vy;
+
+        // だんだん速くする
+        this.boarder.vx += 0.001;
 
         for (let i in this.blocks) {
             this.blocks[i].x += this.blocks[i].vx;
